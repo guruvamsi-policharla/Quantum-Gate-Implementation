@@ -40,11 +40,7 @@ function hamiltonian_eval(e1,e2,e3)
     return H
 end
 
-function hamiltonian_o3_eval(t)
-    e1 = ϵ1(t)
-    e2 = ϵ2(t)
-    e3 = ϵ3(t)
-
+function hamiltonian_o3_eval(e1,e2,e3)
     η = 0.2
     g = 0.03
     I4 = [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1]
