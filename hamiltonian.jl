@@ -1,28 +1,3 @@
-function ϵ1(t)
-    index = convert(Int64,floor(t/run_time*N))
-    if index == N+1
-        index = N
-    end
-    return ϵ1_nodes[index+1]
-end
-
-function ϵ2(t)
-    index = convert(Int64,floor(t/run_time*N))
-    if index == N+1
-        index = N
-    end
-    return ϵ2_nodes[index+1]
-end
-
-function ϵ3(t)
-    index = convert(Int64,floor(t/run_time*N))
-    if index == N+1
-        index = N
-    end
-    return ϵ3_nodes[index+1]
-end
-
-
 function hamiltonian_eval(e1,e2,e3)
     η = 0.2
     g = 0.03
