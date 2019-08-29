@@ -55,8 +55,8 @@ function DE_iter()
     D = rand(DE_population, knobs, N)
     fidelity_arr = zeros(DE_population)
     fidelity_ts = zeros(generations)
-    μ0 = rand()
-    ξ0 = rand()
+    μ0 = 0.9
+    ξ0 = 0.5
 
     for i in 1:generations
         println(μ0)

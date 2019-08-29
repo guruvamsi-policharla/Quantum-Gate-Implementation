@@ -1,8 +1,8 @@
+using CSV, DataFrames, PyCall, PhysicalConstants, LinearAlgebra, SpecialFunctions, StatsBase, PyPlot, JLD2
+
 include("hamiltonian.jl")
 include("EvalUT.jl")
 include("DE.jl")
-
-using CSV, DataFrames, PyCall, PhysicalConstants, LinearAlgebra, SpecialFunctions, StatsBase, PyPlot, JLD2
 
 global const N = 27
 global const knobs = 3
