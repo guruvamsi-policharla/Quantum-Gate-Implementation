@@ -25,9 +25,11 @@ function Integ_H(ϵ_mat)
             Utot = exp(-1*im*dt*h_temp) * Utot
         end
     end
-    return Utot
+    return Utot.*sqrt(comp_dim)./sqrt(tr(Utot'*Utot))
 end
 
 function fidelity(U1,U2)
-    return 1/comp_dim * abs(tr(U1' * U2))
+    _u1 = U1[1:8,1:8]
+    _u2 = U2[1:8,1:8]
+    return 1/8 * abs(tr(_u1' * _u2))
 end

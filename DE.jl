@@ -1,4 +1,4 @@
-function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64, P::Int64)
+function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64)
 
     if rand() < κ1
         μ = μl + rand()*μu
@@ -13,15 +13,15 @@ function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64, P::Int64)
     end
 
     #Mutation
-    M = zeros(P, knobs, N)
-    for i in 1:P
-        r = sample(1:P, 3, replace = false)
+    M = zeros(DE_population, knobs, N)
+    for i in 1:DE_population
+        r = sample(1:DE_population, 3, replace = false)
         M[i,:,:] = D[r[1],:,:] + μ*(D[r[2],:,:] - D[r[3],:,:])
     end
-    println("mutation complete")
+    #println("mutation complete")
     #Crossover
-    C = zeros(P, knobs, N)
-    for i in 1:P
+    C = zeros(DE_population, knobs, N)
+    for i in 1:DE_population
         for j in 1:N
             for k in 1:knobs
                 if rand() < ξ
@@ -32,22 +32,19 @@ function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64, P::Int64)
             end
         end
     end
-    println("crossover complete")
+    #println("crossover complete")
     #Selection
     #TODO Paralellise this rate determining step !!
-    for i in 1:P
+    #TODO Optimise by remembering the fidelity
+    for i in 1:DE_population
         U1 = Integ_H(C[i,:,:])
-        U2 = Integ_H(D[i,:,:])
         f1 = fidelity(U1,Utarget)
-        f2 = fidelity(U2,Utarget)
-        if f1 > f2
+        if f1 > fidelity_arr[i]
             fidelity_arr[i] = f1
             D[i,:,:] = C[i,:,:]
-        else
-            fidelity_arr[i] = f2
         end
     end
-    println("selection complete")
+    #println("selection complete")
     return μ, ξ
 end
 
@@ -58,13 +55,19 @@ function DE_iter()
     μ0 = 0.9
     ξ0 = 0.5
 
+    for i in 1:DE_population
+        U = Integ_H(D[i,:,:])
+        fidelity_arr[i] = fidelity(U,Utarget)
+    end
+
     for i in 1:generations
+        println(i)
         println(μ0)
-        μ0, ξ0 = DE_evolve(D, fidelity_arr, μ0, ξ0, DE_population)
+        μ0, ξ0 = DE_evolve(D, fidelity_arr, μ0, ξ0)
         fidelity_ts[i] = maximum(fidelity_arr)
     end
 
-    @save "fidelity_ts.jld2" fidelity_ts
+    @save "fidelity_ts.jld2" fidelity_ts D
     pygui(true)
     plot(fidelity_ts)
 end
