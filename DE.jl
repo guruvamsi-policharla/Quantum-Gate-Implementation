@@ -34,7 +34,7 @@ function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64)
         end
     else
         M = zeros(DE_population, knobs, N)
-        ctrpar_index = sample(1:DE_population,1)
+        ctrpar_index = sample(1:N,1)
         for i in 1:DE_population
             r = sample(1:DE_population, 3, replace = false)
             M[i,:,ctrpar_index] = D[r[1],:,ctrpar_index] + μ*(D[r[2],:,ctrpar_index] - D[r[3],:,ctrpar_index])
@@ -54,7 +54,7 @@ function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64)
 
     #Selection
     #TODO Paralellise this rate determining step !!
-    for i in 1:DE_population
+    @distributed for i in 1:DE_population
         U1 = Integ_H(C[i,:,:])
         f1 = fidelity(U1,Utarget)
         if f1 > fidelity_arr[i]
@@ -67,13 +67,16 @@ function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64)
 end
 
 function DE_iter()
-    D = rand(DE_population, knobs, N)
-    fidelity_arr = zeros(DE_population)
-    fidelity_ts = zeros(generations)
+    D = SharedArray{Float64,3}(DE_population, knobs, N)
+    for i in 1:DE_population,j in 1:knobs,k in 1:N
+        D[i,j,k] = rand()
+    end
+    fidelity_arr = SharedArray{Float64}(DE_population)
+    fidelity_ts = SharedArray{Float64}(generations)
     μ0 = 0.9
     ξ0 = 0.5
 
-    for i in 1:DE_population
+    @distributed for i in 1:DE_population
         U = Integ_H(D[i,:,:])
         fidelity_arr[i] = fidelity(U,Utarget)
     end

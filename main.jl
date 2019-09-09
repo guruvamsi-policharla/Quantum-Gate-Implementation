@@ -1,5 +1,5 @@
 using Distributed
-addprocs(2)
+addprocs(3)
 println(nprocs())
 @everywhere using LinearAlgebra, SpecialFunctions, StatsBase, JLD2, Dates, SharedArrays
 
@@ -16,8 +16,8 @@ println(nprocs())
 @everywhere global const run_time = 27 #ns
 @everywhere global const O3 = projector_gen()
 @everywhere global const comp_dim = 20
-@everywhere global const DE_population = 100
-@everywhere global const generations = 100
+@everywhere global const DE_population = 80
+@everywhere global const generations = 1500
 @everywhere global const Utarget = Matrix{Float64}(I, 20, 20)
 @everywhere global const S = 0.3
 
