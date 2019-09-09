@@ -13,29 +13,47 @@ function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64)
     end
 
     #Mutation
-    M = zeros(DE_population, knobs, N)
-    for i in 1:DE_population
-        r = sample(1:DE_population, 3, replace = false)
-        M[i,:,:] = D[r[1],:,:] + μ*(D[r[2],:,:] - D[r[3],:,:])
-    end
-    #println("mutation complete")
-    #Crossover
-    C = zeros(DE_population, knobs, N)
-    for i in 1:DE_population
-        for j in 1:N
+    if rand() > S
+        M = zeros(DE_population, knobs, N)
+        for i in 1:DE_population
+            r = sample(1:DE_population, 3, replace = false)
+            M[i,:,:] = D[r[1],:,:] + μ*(D[r[2],:,:] - D[r[3],:,:])
+        end
+        #Crossover
+        C = zeros(DE_population, knobs, N)
+        for i in 1:DE_population
+            for j in 1:N
+                for k in 1:knobs
+                    if rand() < ξ
+                        C[i,k,j] = M[i,k,j]
+                    else
+                        C[i,k,j] = D[i,k,j]
+                    end
+                end
+            end
+        end
+    else
+        M = zeros(DE_population, knobs, N)
+        ctrpar_index = sample(1:DE_population,1)
+        for i in 1:DE_population
+            r = sample(1:DE_population, 3, replace = false)
+            M[i,:,ctrpar_index] = D[r[1],:,ctrpar_index] + μ*(D[r[2],:,ctrpar_index] - D[r[3],:,ctrpar_index])
+        end
+        #Crossover
+        C = deepcopy(D)
+        for i in 1:DE_population
             for k in 1:knobs
                 if rand() < ξ
-                    C[i,k,j] = M[i,k,j]
+                    C[i,k,ctrpar_index] = M[i,k,ctrpar_index]
                 else
-                    C[i,k,j] = D[i,k,j]
+                    C[i,k,ctrpar_index] = D[i,k,ctrpar_index]
                 end
             end
         end
     end
-    #println("crossover complete")
+
     #Selection
     #TODO Paralellise this rate determining step !!
-    #TODO Optimise by remembering the fidelity
     for i in 1:DE_population
         U1 = Integ_H(C[i,:,:])
         f1 = fidelity(U1,Utarget)
@@ -44,7 +62,7 @@ function DE_evolve(D, fidelity_arr, μ0::Float64, ξ0::Float64)
             D[i,:,:] = C[i,:,:]
         end
     end
-    #println("selection complete")
+
     return μ, ξ
 end
 
@@ -67,7 +85,7 @@ function DE_iter()
         fidelity_ts[i] = maximum(fidelity_arr)
     end
 
-    @save "fidelity_ts.jld2" fidelity_ts D
-    pygui(true)
-    plot(fidelity_ts)
+    @save "fidelity_ts"*string(Dates.now())*".jld2" fidelity_ts D
+    #pygui(true)
+    #plot(fidelity_ts)
 end

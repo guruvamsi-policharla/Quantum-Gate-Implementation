@@ -1,4 +1,4 @@
-using CSV, DataFrames, PyCall, PhysicalConstants, LinearAlgebra, SpecialFunctions, StatsBase, PyPlot, JLD2
+using CSV, DataFrames, PyCall, PhysicalConstants, LinearAlgebra, SpecialFunctions, StatsBase, PyPlot, JLD2, Dates
 
 include("hamiltonian.jl")
 include("EvalUT.jl")
@@ -14,8 +14,9 @@ global const run_time = 27 #ns
 global const O3 = projector_gen()
 global const comp_dim = 20
 global const DE_population = 20
-global const generations = 1000
+global const generations = 100
 global const Utarget = Matrix{Float64}(I, 20, 20)
+global const S = 0.1
 
 #=
 Fixing the units as follows
