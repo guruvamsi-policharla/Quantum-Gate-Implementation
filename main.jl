@@ -1,22 +1,25 @@
-using CSV, DataFrames, PyCall, PhysicalConstants, LinearAlgebra, SpecialFunctions, StatsBase, PyPlot, JLD2, Dates
+using Distributed
+addprocs(2)
+println(nprocs())
+@everywhere using LinearAlgebra, SpecialFunctions, StatsBase, JLD2, Dates, SharedArrays
 
-include("hamiltonian.jl")
-include("EvalUT.jl")
-include("DE.jl")
+@everywhere include("hamiltonian.jl")
+@everywhere include("EvalUT.jl")
+@everywhere include("DE.jl")
 
-global const N = 27
-global const knobs = 3
-global const μl = 0.1
-global const μu = 0.1
-global const κ1 = 0.1
-global const κ2 = 0.9
-global const run_time = 27 #ns
-global const O3 = projector_gen()
-global const comp_dim = 20
-global const DE_population = 20
-global const generations = 100
-global const Utarget = Matrix{Float64}(I, 20, 20)
-global const S = 0.1
+@everywhere global const N = 27
+@everywhere global const knobs = 3
+@everywhere global const μl = 0.1
+@everywhere global const μu = 0.1
+@everywhere global const κ1 = 0.1
+@everywhere global const κ2 = 0.9
+@everywhere global const run_time = 27 #ns
+@everywhere global const O3 = projector_gen()
+@everywhere global const comp_dim = 20
+@everywhere global const DE_population = 100
+@everywhere global const generations = 100
+@everywhere global const Utarget = Matrix{Float64}(I, 20, 20)
+@everywhere global const S = 0.3
 
 #=
 Fixing the units as follows
@@ -25,6 +28,6 @@ T is in ns
 Hence, do not need to change h if we ignore the 10^9 factor in both time and frequency
 =#
 
-DE_iter()
+@time DE_iter()
 
 #@load "fidelity_ts.jld2"
