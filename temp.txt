@@ -1,0 +1,35 @@
+for i in 1:nprocs()
+	    proc_complete[i] = 0
+	end
+	@distributed for i in 2:nprocs()
+		E_temp[:,:,:,:,:,i-1],
+	    skyrm_temp[:,:,:,:,:,i-1],
+		mag_temp[:,:,:,:,:,i-1],
+		magbind_temp[:,:,:,:,i-1],
+		skyrmbind_temp[:,:,:,:,i-1] = fetch(@spawnat i montecarlo(Temperature,N,J_space))
+	    proc_complete[i] = 1
+	end
+
+	proc_complete[1] = 1
+
+	for i in 1:5000
+	    if(mean(proc_complete) == 1)
+	        println(proc_complete)
+	        @save "data"*string(N)*"x"*string(N)*"fullresbind"*string(Dates.now())*".jld2" E_temp skyrm_temp mag_temp magbind_temp skyrmbind_temp Temperature N J_space
+		break
+	    end
+	    println(proc_complete)
+	    sleep(35)
+	end
+
+    for i in 2:nprocs()
+        step = floor(DE_population/i)
+        if i < nprocs()
+            C[(i-1)*step + 1: i*step,:,:],
+            fidelity_arr[(i-1)*step + 1: i*step] = dist_sel(C[(i-1)*step + 1: i*step,:,:],D[(i-1)*step + 1: i*step,:,:],fidelity_arr[(i-1)*step + 1: i*step])
+        elseif i == nprocs()
+            C[(i-1)*step + 1: end,:,:],
+            fidelity_arr[(i-1)*step + 1: end] = dist_sel(C[(i-1)*step + 1: end,:,:],D[(i-1)*step + 1: end,:,:],fidelity_arr[(i-1)*step + 1: end])
+        end
+    end
+
