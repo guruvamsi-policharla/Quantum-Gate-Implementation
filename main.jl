@@ -1,5 +1,5 @@
 using Distributed
-addprocs(3)
+addprocs(4)
 println(nprocs())
 @everywhere using LinearAlgebra, SpecialFunctions, StatsBase, JLD2, Dates, SharedArrays
 
@@ -17,9 +17,16 @@ println(nprocs())
 @everywhere global const O3 = projector_gen()
 @everywhere global const comp_dim = 20
 @everywhere global const DE_population = 80
-@everywhere global const generations = 1500
-@everywhere global const Utarget = Matrix{Float64}(I, 20, 20)
-@everywhere global const S = 0.3
+@everywhere global const generations = 1000
+
+@everywhere _Utarget = Matrix{Float64}(I, 8, 8)
+_Utarget[8,8] = 0
+_Utarget[7,7] = 0
+_Utarget[7,8] = 1
+_Utarget[8,7] = 1
+
+@everywhere global const Utarget = _Utarget
+@everywhere global const S = 0.14
 
 #=
 Fixing the units as follows
@@ -29,5 +36,3 @@ Hence, do not need to change h if we ignore the 10^9 factor in both time and fre
 =#
 
 @time DE_iter()
-
-#@load "fidelity_ts.jld2"
