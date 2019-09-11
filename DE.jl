@@ -89,32 +89,40 @@ end
 
 function DE_iter()
     D = SharedArray{Float64,3}(DE_population, knobs, N)
-    for i in 1:DE_population,j in 1:knobs,k in 1:N
-        D[i,j,k] = rand() - 0.5
-    end
     fidelity_arr = SharedArray{Float64,1}(DE_population)
     fidelity_ts = SharedArray{Float64,1}(generations)
     μ0 = 0.9
     ξ0 = 0.5
 
+    while(maximum(fidelity_arr) < 0.63)
+        for i in 1:DE_population,j in 1:knobs,k in 1:N
+            D[i,j,k] = rand()
+        end
 
-    @sync @distributed for i in 1:DE_population
-        U = Integ_H(D[i,:,:])
-        fidelity_arr[i] = fidelity(U,Utarget)
+        @sync @distributed for i in 1:DE_population
+            U = Integ_H(D[i,:,:])
+            fidelity_arr[i] = fidelity(U,Utarget)
+        end
+        println("Trying setup again")
+        println(maximum(fidelity_arr))
     end
-
     println("Setup Complete. Evolution Starting.")
 
     for i in 1:generations
         println(i)
         μ0, ξ0, D = DE_evolve(D, fidelity_arr, μ0, ξ0)
         fidelity_ts[i] = maximum(fidelity_arr)
+
+        if(maximum(var(D,dims=1)) < 10^-5)
+            break
+        end
+
         println(fidelity_ts[i])
     end
     println("Evolution Complete")
 
     rmprocs(workers())
 
-    @save "fidelity_ts"*string(Dates.now())*".jld2" fidelity_ts D
+    @save "fidelity_ts"*string(Dates.now())*string(S)*"_"*string(DE_population)*"_"*string(generations)*".jld2" fidelity_ts D S DE_population generations
 
 end

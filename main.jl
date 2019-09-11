@@ -1,7 +1,7 @@
 using Distributed
 addprocs(4)
 println(nprocs())
-@everywhere using LinearAlgebra, SpecialFunctions, StatsBase, JLD2, Dates, SharedArrays
+@everywhere using LinearAlgebra, SpecialFunctions, StatsBase, JLD2, Dates, SharedArrays, Statistics
 
 @everywhere include("hamiltonian.jl")
 @everywhere include("EvalUT.jl")
