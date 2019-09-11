@@ -3,11 +3,11 @@ addprocs(4)
 println(nprocs())
 @everywhere using LinearAlgebra, SpecialFunctions, StatsBase, JLD2, Dates, SharedArrays, Statistics
 
-#@load "/home/vamsi/Github/Quantum-Gate-Implementation-master/data/fidelity_ts2019-09-11T22:35:54.6060.14_80_1500.jld2"
+@load "/home/vamsi/Github/Quantum-Gate-Implementation-master/data2019-09-11T19:32:16.078.jld2"
 @everywhere include("hamiltonian.jl")
 @everywhere include("EvalUT.jl")
 @everywhere include("DE.jl")
-
+#=
 @everywhere global const N = 27
 @everywhere global const knobs = 3
 @everywhere global const μl = 0.1
@@ -30,29 +30,15 @@ println(nprocs())
 0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0;
 ]
 @everywhere global const S = 0.0
+=#
 
-
-fidelity_arr = SharedArray{Float64,1}(DE_population)
-U = rand(DE_population,20,20)# + im*rand(DE_population,20,20)
-
-@sync @distributed for i in 1:DE_population
-    fidelity_arr[i] = fidelity(U[i,:,:],Utarget)
-    if i == DE_population
-        display(U[i,1:8,1:8])
-        println("fidelity",fidelity(U[i,:,:],Utarget))
-        display(Utarget)
-    end
-end
-
-fidelity_arr_temp = zeros(DE_population)
+fidelity_arr = zeros(DE_population)
 for i in 1:DE_population
-    fidelity_arr_temp[i] = fidelity(U[i,:,:],Utarget)
-    if i == DE_population
-        display(U[i,1:8,1:8])
-        println("fidelity",fidelity(U[i,:,:],Utarget))
-        display(Utarget)
-    end
+    U = Integ_H(D[i,:,:])
+    fidelity_arr[i] = fidelity(U,Utarget)
 end
+println(maximum(fidelity_arr))
+println(argmax(fidelity_arr))
 
-#println(fidelity_arr-fidelity_arr_temp)
+
 rmprocs(workers())

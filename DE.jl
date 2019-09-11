@@ -94,9 +94,9 @@ function DE_iter()
     μ0 = 0.9
     ξ0 = 0.5
 
-    while(maximum(fidelity_arr) < 0.63)
+    while(maximum(fidelity_arr) < 0.5)
         for i in 1:DE_population,j in 1:knobs,k in 1:N
-            D[i,j,k] = rand()
+            D[i,j,k] = rand() - 0.5
         end
 
         @sync @distributed for i in 1:DE_population
@@ -123,6 +123,5 @@ function DE_iter()
 
     rmprocs(workers())
 
-    @save "fidelity_ts"*string(Dates.now())*string(S)*"_"*string(DE_population)*"_"*string(generations)*".jld2" fidelity_ts D S DE_population generations
-
+    @save "data"*string(Dates.now())*".jld2" fidelity_ts D N knobs run_time O3 comp_dim DE_population generations Utarget S 
 end
