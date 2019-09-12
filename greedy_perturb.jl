@@ -3,7 +3,7 @@ addprocs(4)
 println(nprocs())
 @everywhere using LinearAlgebra, SpecialFunctions, StatsBase, JLD2, Dates, SharedArrays, Statistics
 
-@load "/home/vamsi/Github/Quantum-Gate-Implementation-master/data2019-09-11T19:32:16.078.jld2"
+@load "/home/vamsi/Github/Quantum-Gate-Implementation-master/data2019-09-11T20:30:17.369.jld2"
 @everywhere include("hamiltonian.jl")
 @everywhere include("EvalUT.jl")
 @everywhere include("DE.jl")
@@ -37,6 +37,9 @@ for i in 1:DE_population
     U = Integ_H(D[i,:,:])
     fidelity_arr[i] = fidelity(U,Utarget)
 end
+
+
+
 println(maximum(fidelity_arr))
 println(argmax(fidelity_arr))
 

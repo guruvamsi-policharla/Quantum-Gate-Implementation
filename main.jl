@@ -16,8 +16,8 @@ println(nprocs())
 @everywhere global const run_time = 27 #ns
 @everywhere global const O3 = projector_gen()
 @everywhere global const comp_dim = 20
-@everywhere global const DE_population = 20
-@everywhere global const generations = 5
+@everywhere global const DE_population = 80
+@everywhere global const generations = 1000
 @everywhere global const Utarget = [
 1.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0;
 0.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0;

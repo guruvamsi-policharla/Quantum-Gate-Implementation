@@ -118,10 +118,11 @@ function DE_iter()
         end
 
         println(fidelity_ts[i])
+        println("Variance-",maximum(var(D,dims=1)))
     end
     println("Evolution Complete")
 
     rmprocs(workers())
 
-    @save "data"*string(Dates.now())*".jld2" fidelity_ts D N knobs run_time O3 comp_dim DE_population generations Utarget S 
+    @save "data"*string(Dates.now())*".jld2" fidelity_ts D N knobs run_time O3 comp_dim DE_population generations Utarget S
 end
