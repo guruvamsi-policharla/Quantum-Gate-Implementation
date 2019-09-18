@@ -36,11 +36,10 @@ function DE_evolve(D::SharedArray, fidelity_arr::SharedArray, μ0::Float64, ξ0:
         end
 
         #Selection
-        #TODO Paralellise this rate determining step !!
         @sync @distributed for i in 1:DE_population
             U1 = Integ_H(C[i,:,:])
-            f1 = fidelity(U1,Utarget)
-
+            f1 = 1 - phase_comp(U1,Utarget)
+            #f1 = fidelity_state(U1)
             if f1 > fidelity_arr[i]
                 fidelity_arr[i] = f1
                 D[i,:,:] = C[i,:,:]
@@ -72,11 +71,9 @@ function DE_evolve(D::SharedArray, fidelity_arr::SharedArray, μ0::Float64, ξ0:
         end
 
         #Selection
-        #TODO Paralellise this rate determining step !!
         @sync @distributed for i in 1:DE_population
             U1 = Integ_H(C[i,:,:])
-            f1 = fidelity(U1,Utarget)
-
+            f1 = 1 - phase_comp(U1,Utarget)
             if f1 > fidelity_arr[i]
                 fidelity_arr[i] = f1
                 D[i,:,:] = C[i,:,:]
@@ -94,14 +91,14 @@ function DE_iter()
     μ0 = 0.9
     ξ0 = 0.5
 
-    while(maximum(fidelity_arr) < 0.5)
+    while(maximum(fidelity_arr) < 0.7)
         for i in 1:DE_population,j in 1:knobs,k in 1:N
             D[i,j,k] = rand() - 0.5
         end
 
         @sync @distributed for i in 1:DE_population
             U = Integ_H(D[i,:,:])
-            fidelity_arr[i] = fidelity(U,Utarget)
+            fidelity_arr[i] = 1 - phase_comp(U,Utarget)
         end
         println("Trying setup again")
         println(maximum(fidelity_arr))
