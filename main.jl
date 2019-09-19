@@ -38,3 +38,6 @@ Hence, do not need to change h if we ignore the 10^9 factor in both time and fre
 =#
 
 @time DE_iter()
+
+rmprocs(workers())
+println("Successfully removed workers")

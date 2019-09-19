@@ -119,7 +119,8 @@ function DE_iter()
     end
     println("Evolution Complete")
 
-    rmprocs(workers())
-
-    @save "data"*string(Dates.now())*".jld2" fidelity_ts D N knobs run_time O3 comp_dim DE_population generations Utarget S
+    _D = D.s
+    _fidelity_ts = fidelity_ts.s
+    @save "data"*string(Dates.now())*".jld2" _fidelity_ts _D N knobs run_time O3 comp_dim DE_population generations Utarget S
+    println("Data saved")
 end
