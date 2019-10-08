@@ -17,7 +17,7 @@ println(nprocs())
 @everywhere global const O3 = projector_gen()
 @everywhere global const comp_dim = 20
 @everywhere global const DE_population = 10
-@everywhere global const generations = 5
+@everywhere global const generations = 50
 @everywhere global const Utarget = [
 1.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0;
 0.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0;
@@ -28,6 +28,19 @@ println(nprocs())
 0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0;
 0.0  0.0  0.0  0.0  0.0  0.0  0.0  -1.0;
 ]
+#=
+@everywhere global const Utarget = [
+1.0 1 1 1 1 1 1 1
+1 -1 1 -1 1 -1 1 -1
+1 1 -1 -1 1 1 -1 -1
+1 -1 -1 1 1 -1 -1 1
+1 1 1 1 -1 -1 -1 -1
+1 -1 1 -1 -1 1 -1 1
+1 1 -1 -1 -1 -1 1 1
+1 -1 -1 1 -1 1 1 -1
+].*1/2^1.5
+=#
+
 @everywhere global const S = 0.14
 
 #=

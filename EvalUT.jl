@@ -27,30 +27,17 @@ function Integ_H(ϵ_mat)
     end
     return Utot.*sqrt(comp_dim)./sqrt(tr(Utot'*Utot))
 end
-#=
-function fidelity(U1,U2)
+
+function infidelity(U1,U2,x)
+    p1 = Diagonal([1, exp(-im*x[6]), exp(-im*x[5]), exp(-im*(x[5] + x[6])), exp(-im*x[4]), exp(-im*(x[4]+x[6])), exp(-im*(x[4]+x[5])), exp(-im*(x[4]+x[5]+x[6]))])
+    p2 = Diagonal([1, exp(-im*x[3]), exp(-im*x[2]), exp(-im*(x[2] + x[3])), exp(-im*x[1]), exp(-im*(x[1]+x[3])), exp(-im*(x[1]+x[2])), exp(-im*(x[1]+x[2]+x[3]))])
+
     _u1 = U1[1:8,1:8]
     _u2 = U2[1:8,1:8]
-    return 1/8 * abs(tr(_u1' * _u2))
+    return 1-1/8 * abs(tr(p1*_u1*p2 * _u2'))
 end
-=#
-function phase_comp(U1,U2)
-    f(x) = 1 - 1/8 * abs(tr(Diagonal([1, exp(-im*x[6]), exp(-im*x[5]), exp(-im*(x[5] + x[6])), exp(-im*x[4]), exp(-im*(x[4]+x[6])), exp(-im*(x[4]+x[5])), exp(-im*(x[4]+x[5]+x[6]))])
-                                        *U1[1:8,1:8]
-                                        *Diagonal([1, exp(-im*x[3]), exp(-im*x[2]), exp(-im*(x[2] + x[3])), exp(-im*x[1]), exp(-im*(x[1]+x[3])), exp(-im*(x[1]+x[2])), exp(-im*(x[1]+x[2]+x[3]))])
-                                        *U2[1:8,1:8]'
-                                        ))
-    max_fid = optimize(f,[0.1 0.2 0.3 0.1 0.2 0.3])
-    #println(max_fid)
-    return max_fid.minimum
-    #return f(zeros(6))
+
+function phasecomp_infidel(U1,U2)
+    res = optimize(x -> infidelity(U1,U2,x),[0.1 0.2 0.3 0.1 0.2 0.3])
+    return res.minimum
 end
-#=
-function fidelity_state(U)
-    _u = U[1:8,1:8]
-    vec_targ = ones(8)./2^1.5
-    vec_init = zeros(8)
-    vec_init[1] = 1
-    return abs(vec_init' * _u * vec_targ)^2
-end
-=#
