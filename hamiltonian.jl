@@ -9,7 +9,7 @@ function hamiltonian_o3_eval(e1,e2,e3)
     Y = [0 -1 0 0; 1 0 -sqrt(2) 0; 0 sqrt(2) 0 -sqrt(3); 0 0 sqrt(3) 0] #should be multiplied by an i
     I8 = kron(I4, I4)
 
-    H = kron(H1, I8) + kron(kron(I4, H2), I4) + kron(I8, H3) + g / 2 * ( kron(kron(X, X), I4) + kron(I4, kron(X, X)) - kron(kron(Y, Y), Y) - kron(I4, kron(Y, Y)) )
+    H = kron(H1, I8) + kron(kron(I4, H2), I4) + kron(I8, H3) + g / 2 * ( kron(kron(X, X), I4) + kron(I4, kron(X, X)) - kron(kron(Y, Y), I4) - kron(I4, kron(Y, Y)) )
 
     H = O3*H*O3'
     H = H[1:20,1:20]
